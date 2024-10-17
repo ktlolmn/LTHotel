@@ -19,6 +19,13 @@ import com.hotel.web.Service.FeedbackService;
 public class FeedbackControler {
     @Autowired
     FeedbackService feedbackService;
+    
+    @GetMapping("/get-by-room/{roomID}")
+    public ResponseEntity<Response> getByRoomID(@PathVariable int roomID){
+        System.out.println("getFeedback room: "+ roomID);
+        Response response = feedbackService.getByRoom(roomID);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
 
     @PostMapping("/create")
     @PreAuthorize("hasAuthority('USER')")
@@ -35,4 +42,5 @@ public class FeedbackControler {
         Response response = feedbackService.getByBooking(bookingID);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
+
 }

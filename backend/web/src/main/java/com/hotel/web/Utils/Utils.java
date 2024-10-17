@@ -2,6 +2,7 @@ package com.hotel.web.Utils;
 
 import java.security.SecureRandom;
 import java.util.List;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import com.hotel.web.DTO.BookingDTO;
@@ -88,5 +89,8 @@ public class Utils {
     }
     public static List<BookingDTO> mapBookingList(List<Booking> bookings){
         return bookings.stream().map(Utils::mapBooking).collect(Collectors.toList());
+    }
+    public static List<FeedbackDTO> mapFeedbackList(List<Feedback> feedbacks){
+        return feedbacks.stream().map(Utils::mapFeedback).collect(Collectors.toList());
     }
 }

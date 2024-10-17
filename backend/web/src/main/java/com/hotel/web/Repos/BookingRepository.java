@@ -14,7 +14,6 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Integer>{
     List<Booking> findByCustomer(Customer customer);
-
     @Query("SELECT r FROM Room r WHERE r.roomId NOT IN " +
            "(SELECT b.room.roomId FROM Booking b " +
            "WHERE b.status != 'CANCELLED' AND " +
@@ -22,4 +21,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer>{
            "(b.checkInDate >= :checkInDate AND b.checkInDate < :checkOutDate)))")
     List<Room> findAvailableRooms(@Param("checkInDate") LocalDateTime checkInDate,
                                   @Param("checkOutDate") LocalDateTime checkOutDate);
+    List<Booking> findByRoom(Room room);
+    @Query("SELECT b FROM Booking b WHERE YEAR(b.checkOutDate) = :year")
+    List<Booking> findBookingsByYear(@Param("year") int year);
 }

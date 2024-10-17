@@ -65,7 +65,6 @@ public class BookingService {
 
     public Response getByCustomer(String username) {
         Response response = new Response();
-
         try {
             Customer customer = customerRepository.findByEmail(username)
                     .orElseThrow(() -> new OurException("Customer Not Found"));
@@ -226,6 +225,27 @@ public class BookingService {
         } catch (Exception e) {
             response.setStatus(500);
             response.setMessage("Error Processing payment: " + e.getMessage());
+        }
+
+        return response;
+    }
+
+    public Response getByYear(int year) {
+        Response response = new Response();
+        try {
+            List<Booking> bookings = bookingRepository.findBookingsByYear(year);
+            List<BookingDTO> bookingDTOs = Utils.mapBookingList(bookings);
+            response.setStatus(200);
+            response.setMessage("success");
+            response.setBookingList(bookingDTOs);
+
+        } catch (OurException e) {
+            response.setStatus(404);
+            response.setMessage(e.getMessage());
+
+        } catch (Exception e) {
+            response.setStatus(500);
+            response.setMessage("Error fetch bookings: " + e.getMessage());
         }
 
         return response;

@@ -8,13 +8,16 @@ import com.hotel.web.DTO.FeedbackDTO;
 import com.hotel.web.DTO.Response;
 import com.hotel.web.Entity.Booking;
 import com.hotel.web.Entity.Feedback;
+import com.hotel.web.Entity.Room;
 import com.hotel.web.Repos.BookingRepository;
 import com.hotel.web.Repos.FeedbackRepository;
+import com.hotel.web.Repos.RoomRepository;
 import com.hotel.web.Utils.Utils;
 import com.hotel.web.exception.OurException;
 
 import jakarta.transaction.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -23,6 +26,8 @@ public class FeedbackService {
     FeedbackRepository feedbackRepository;
     @Autowired
     BookingRepository bookingRepository;
+    @Autowired
+    RoomRepository roomRepository;
 
     @Transactional
     public Response createFeedback(FeedbackDTO feedbackDTO) {
@@ -80,6 +85,47 @@ public class FeedbackService {
 
         } catch (Exception e) {
             response.setStatus(500);
+            response.setMessage("Error Retrieving feedback: " + e.getMessage());
+        }
+
+        return response;
+    }
+    public Response getByRoom(int roomID) {
+        Response response = new Response();
+
+        try {
+            Room room = roomRepository.findById(roomID)
+                    .orElseThrow(()-> new OurException("Room not found"));
+            List<Booking> bookingList = bookingRepository.findByRoom(room);
+            System.out.println("Số booking : " + bookingList.size());
+            if(bookingList.size()>0){
+                List<Feedback> feedbacks = new ArrayList<>();
+                bookingList.forEach((b)->{
+                    Feedback feedback = feedbackRepository.findByBooking(b);
+                    if(feedback != null){
+                        feedbacks.add(feedback);
+                    }
+                });
+                if (feedbacks.size() > 0) {
+                    response.setStatus(200);
+                    response.setMessage("Success");
+                    response.setFeedbackList(Utils.mapFeedbackList(feedbacks));
+                }else{
+                    response.setStatus(201);
+                    response.setMessage("Feedbacks is empty");
+                }
+                System.out.println("feedback : " + feedbacks);
+            }else{
+                response.setStatus(202);
+                response.setMessage("Bookings is empty");
+            }
+        } catch (OurException e) {
+            response.setStatus(404);
+            response.setMessage(e.getMessage());
+            System.out.println(e.toString());
+        } catch (Exception e) {
+            response.setStatus(500);
+            System.out.println(e.toString());
             response.setMessage("Error Retrieving feedback: " + e.getMessage());
         }
 

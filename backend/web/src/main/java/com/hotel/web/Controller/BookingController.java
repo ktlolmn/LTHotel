@@ -41,6 +41,14 @@ public class BookingController {
         return ResponseEntity.status(response.getStatus()).body(response);
     }
 
+    @GetMapping("/get-by-year/{year}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public ResponseEntity<Response> getByYear(@PathVariable int year){
+        System.out.println("Lấy tất theo năm");
+        Response response = bookingService.getByYear(year);
+        return ResponseEntity.status(response.getStatus()).body(response);
+    }
+
     @GetMapping("/get-by-customer")
     @PreAuthorize("hasAuthority('USER')")
     public ResponseEntity<Response> getByCustomer(){
